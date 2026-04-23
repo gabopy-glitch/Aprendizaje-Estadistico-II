@@ -1,5 +1,5 @@
 ######################################
-##Modelso autoregresivos
+##Modelos autoregresivos
 ######################################
 
 install.packages("forecast")
@@ -56,7 +56,7 @@ df <- data.frame(
 
 #analizamos difereciaciones con R
 ndiffs(y1)#para ver cuantas differenciaciones se necesitan para que se vuelva 
-          #estacionaria la serie
+#estacionaria la serie
 
 nsdiffs(y1)#para ver si hay elementos estacionales
 
@@ -81,7 +81,7 @@ library(readxl)
 inflation <- read_xlsx("SCN_Inflacion.xlsx")
 
 #Formato de serie de tiempo para Nacional
-ejm <- ts(inflation$NACIONAL, start = c(2005, 1), frequency = 12)
+ejm <- ts(inflation$NACIONAL, start = c(2005, 2), frequency = 12)
 
 #Analisis gráfico
 ejm %>% ggtsdisplay(main="")
@@ -90,9 +90,20 @@ ejm %>% ggtsdisplay(main="")
 F2 <- ur.df(ejm, type = "drift", selectlags = "AIC")
 summary(F2)
 
-#Si test-statistcs primer valor absoluto es mayor a los valores de tau2
-#Entonces eso nos idica estacionaria en la data
+#H0: Tiene raíz unitaria (no es estacionaria)
+#Si test-statistcs primer valor absoluto es mayor, o es más negativo,
+#a los valores de tau2
+#Entonces eso nos idica que la serie es estacionaria
 
-#Como la serie presenta estacionaria no es necesario hacer la diferenciación
+#Como la serie es estacionaria no es necesario hacer la diferenciación
 
-#Psita del profe: La serie también es estacionaria por lo que se necesita SARIMA
+#Pista del profe: La serie también es estacionaria por lo que se necesita SARIMA
+#Modelo Sarima
+m3 <- Arima(ejm, order = c(1,0,0), seasonal = c(1,0,0)) #order = c(1#ar,0#diff,0#MA)
+summary(m3)
+checkresiduals(m3)
+
+#Modelo erroneo (de ejemplo)
+me <- Arima(ejm, order = c(1,0,0))
+summary(me)
+checkresiduals(me)
